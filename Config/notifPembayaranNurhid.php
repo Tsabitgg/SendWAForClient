@@ -106,7 +106,6 @@ class JWT
 
 $secretKey = 'TokenJWT_BMI_ICT';
 
-// Array pesan yang akan dikirimkan
 $messages = [
     "Terima kasih, {NMCUST}, atas pembayaran sebesar Rp{nominal}. Semoga hari Anda menyenangkan!",
     "Halo, {NMCUST}! Kami telah menerima pembayaran Anda sebesar Rp{nominal}. Terima kasih!",
@@ -114,7 +113,6 @@ $messages = [
 ];
 
 try {
-    // Ambil token dari query string
     $token = $_GET['token'] ?? null;
 
     if (!$token) {
@@ -123,7 +121,6 @@ try {
         exit;
     }
 
-    // Decode token JWT
     $decoded = JWT::decode($token, $secretKey);
 
     $nova = $decoded->nova ?? null;
@@ -136,12 +133,10 @@ try {
     }
 
     $db = new mysqli('10.99.23.18', 'root', 'Smartpay1ct', 'solo_nurhidayah');
-
     if ($db->connect_error) {
         throw new Exception("Database connection failed: " . $db->connect_error);
     }
 
-    // Select data berdasarkan nova
     $nova = $db->real_escape_string($nova);
     $result = $db->query("SELECT scctbill.BILLAM, scctcust.NOCUST, scctcust.GENUSContact, scctcust.NMCUST 
     FROM scctcust JOIN scctbill ON scctcust.CUSTID = scctbill.CUSTID WHERE 
@@ -156,40 +151,77 @@ try {
         $GENUSContact = $row['GENUSContact'];
         $NMCUST = $row['NMCUST'];
 
-        // Format pesan dengan NMCUST dan nominal
         $messageTemplate = $messages[array_rand($messages)];
         $message = str_replace(['{NMCUST}', '{nominal}'], [$NMCUST, number_format($nominal, 0, ',', '.')], $messageTemplate);
 
-        // Hit API WhatsApp
-        $api_url = 'https://api.watzap.id/v1/send_message';
-        $data = [
-            "api_key" => "1FOPYD2SA8VPIU4Q",
-            "number_key" => "yXLAdQbRzkHdvlDJ",
-            "phone_no" => $GENUSContact,
-            "message" => $message,
-        ];
+        $dbTraffic = new mysqli("10.99.23.20", "root", "Smartpay1ct", "farrelep_broadcaster");
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $api_url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        ]);
-
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-        curl_close($curl);
-
-        if ($error) {
-            echo json_encode(["error" => "Failed to send message to $GENUSContact."]);
-            exit;
+        if ($dbTraffic->connect_error) {
+            throw new Exception("Database connection failed: " . $dbTraffic->connect_error);
         }
 
-        echo json_encode(["success" => "Message sent to $GENUSContact: $message"]);
+        try {
+            $selectQuery = "SELECT SentWA('Solo_NurHidayah', '" . $GENUSContact . "', 'yXLAdQbRzkHdvlDJ', '" . $message . "')";
+            $selectResult = $dbTraffic->query($selectQuery);
+
+            if (!$selectResult) {
+                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            }
+
+            $lastNumber = $selectResult->fetch_row()[0];
+
+            // Hit API WhatsApp
+            $api_url = 'https://api.watzap.id/v1/send_message';
+            $data = [
+                "api_key" => "1FOPYD2SA8VPIU4Q",
+                "number_key" => "yXLAdQbRzkHdvlDJ",
+                "phone_no" => $GENUSContact,
+                "message" => $message,
+            ];
+
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $api_url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            ]);
+
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+            curl_close($curl);
+
+            if ($error) {
+                throw new Exception("Error in WhatsApp API call: $error");
+            }
+
+            $arrResponse = json_decode($response, true);
+            if ($arrResponse['status'] !== 'success') {
+                throw new Exception("WhatsApp API returned an error: " . $arrResponse['message']);
+            }
+            
+            $status = $arrResponse['status'];
+            $responseMessage = $arrResponse['message'];
+            $arrayResponse = json_encode($arrResponse);
+
+            $procedureQuery = "CALL GetResp('" . $arrayResponse . "', '" . $status . "', '" . $responseMessage . "', " . $lastNumber . ")";
+            $procedureResult = $dbTraffic->query($procedureQuery);
+
+            if (!$procedureResult) {
+                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            }
+
+            echo json_encode(["success" => "Message sent and procedure called successfully."]);
+        } catch (Exception $e) {
+            echo json_encode(["error" => $e->getMessage()]);
+        } finally {
+            $dbTraffic->close();
+        }
     }
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["error" => $e->getMessage()]);
 }
+
+?>
