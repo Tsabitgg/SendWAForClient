@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send'])) {
 function sendRequestToApiwa($data)
 {
     // $url = 'http://localhost/sendwa/apiwa.php';
-    $url = 'http://localhost/api/SendWAForclient/api/apiwa.php';
+    $url = 'http://localhost/apiwa/SendWAForClient/api/apiwa.php';
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -328,10 +328,17 @@ $conn->close();
                                         <input type="text" name="search-siswa" id="search-siswa" class="w-2/3 pl-2 pr-2 pt-1 pb-1 border-none rounded-md focus:ring-0" placeholder="Cari nama siswa...">
                                         <div class="m-2">
                                             <select id="filter-kelas" class="w-full p-1 border border-gray-300 rounded-md text-sm">
-                                                <option value="">Semua Kelas</option>
-                                                <?php foreach ($kelasOptions as $kelas): ?>
-                                                    <option value="<?= htmlspecialchars($kelas); ?>"><?= htmlspecialchars($kelas); ?></option>
-                                                <?php endforeach; ?>
+                                            <option value="">Semua Kelas</option>
+                                                <?php
+                                                foreach ($kelasOptions as $kelas):
+                                                    // Hanya tampilkan jika $kelas tidak kosong dan tidak null
+                                                    if (!empty(trim($kelas))) {
+                                                ?>
+                                                        <option value="<?= htmlspecialchars($kelas); ?>"><?= htmlspecialchars($kelas); ?></option>
+                                                <?php
+                                                    }
+                                                endforeach;
+                                                ?>
                                             </select>
                                         </div>
                                     </div>
@@ -377,10 +384,17 @@ $conn->close();
                             <div class="mb-4" id="sekolahField">
                                 <label for="sekolah" class="block text-gray-700 font-medium mb-2">Pilih Sekolah :</label>
                                 <select name="sekolah" id="sekolah" class="block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" onchange="fetchKelasOptions()">
-                                    <option value="">Pilih Sekolah</option>
-                                    <?php foreach ($sekolahOptions as $option): ?>
-                                        <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
-                                    <?php endforeach; ?>
+                                <option value="">Pilih Sekolah</option>
+                                    <?php
+                                    foreach ($sekolahOptions as $option):
+                                        // Hanya tampilkan jika $kelas tidak kosong dan tidak null
+                                        if (!empty(trim($option))) {
+                                    ?>
+                                            <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
+                                    <?php
+                                        }
+                                    endforeach;
+                                    ?>
                                 </select>
                             </div>
 

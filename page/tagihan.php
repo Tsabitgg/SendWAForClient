@@ -163,7 +163,7 @@ function sendRequestToApiwa($data)
 {
     // $url = 'http://103.23.103.43/apiwa/apiwa.php'; //server
     // $url = 'http://localhost/sendwa/apiwa.php';
-    $url = 'http://localhost/sendwaforclient/api/apiwa.php';
+    $url = 'http://localhost/apiwa/SendWAForClient/api/apiwa.php';
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
@@ -362,7 +362,10 @@ $conn->close();
                                 <select name="sekolah" id="sekolahSiswa" class="block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" onchange="fetchSiswaOptions()">
                                     <option value="">Pilih Sekolah</option>
                                     <?php foreach ($sekolahOptions as $option): ?>
-                                        <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
+                                        <?php if (!empty($option)): // Cek jika nilai tidak kosong atau null 
+                                        ?>
+                                            <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -383,20 +386,20 @@ $conn->close();
                                         </div>
                                     </div>
                                     <div id="siswa-list" name="siswa[]">
-                                        <?php foreach ($siswaOptions as $index => $option): ?>
-                                            <?php $inputId = "siswa_option_" . $option; ?>
-                                            <div class="flex items-center">
-                                                <input type="checkbox" id="<?= $inputId; ?>"
-                                                    class="bg-transparent peer mr-2 appearance-none h-4 w-4 border-2 rounded-full hover:border-teal-500 cursor-pointer border-teal-300"
-                                                    name="siswa[]"
-                                                    value="<?= htmlspecialchars($option); ?>"
-                                                    data-siswa-id="<?= $index; ?>"> <!-- Gunakan $index sebagai data-siswa-id -->
-                                                <label for="<?= $inputId; ?>"
-                                                    class="flex items-center w-full p-1 border-b rounded cursor-pointer transition-colors duration-200 hover:bg-teal-600 hover:text-white  peer-checked:bg-green-500 peer-checked:text-white">
-                                                    <?= htmlspecialchars($option); ?>
-                                                </label>
-                                            </div>
-                                        <?php endforeach; ?>
+
+                                        <?php $inputId = "siswa_option_" . $option; ?>
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="<?= $inputId; ?>"
+                                                class="bg-transparent peer mr-2 appearance-none h-4 w-4 border-2 rounded-full hover:border-teal-500 cursor-pointer border-teal-300"
+                                                name="siswa[]"
+                                                value="<?= htmlspecialchars($option); ?>"
+                                                data-siswa-id="<?= $index; ?>"> <!-- Gunakan $index sebagai data-siswa-id -->
+                                            <label for="<?= $inputId; ?>"
+                                                class="flex items-center w-full p-1 border-b rounded cursor-pointer transition-colors duration-200 hover:bg-teal-600 hover:text-white  peer-checked:bg-green-500 peer-checked:text-white">
+                                                <?= htmlspecialchars($option); ?>
+                                            </label>
+                                        </div>
+
                                     </div>
 
 
@@ -425,7 +428,10 @@ $conn->close();
                                 <select name="sekolah" id="sekolah" class="block w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" onchange="fetchKelasOptions()">
                                     <option value="">Pilih Sekolah</option>
                                     <?php foreach ($sekolahOptions as $option): ?>
-                                        <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
+                                        <?php if (!empty($option)): // Cek jika nilai tidak kosong atau null 
+                                        ?>
+                                            <option value="<?= htmlspecialchars($option); ?>"><?= htmlspecialchars($option); ?></option>
+                                        <?php endif; ?>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -524,22 +530,37 @@ $conn->close();
                                             <div id="noDataMessage" class="text-center text-black" style="display: none;">
                                                 Tidak ada data tagihan untuk kelas yang dipilih.
                                             </div>
-                                            <div class="mb-4 flex gap-2">
-                                                <button id="checkAllBtn" class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded text-sm">
+                                            <div class="mb-4 flex gap-2" id="buttonSiswa">
+                                                <button id="checkAllBtnSiswa" class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded text-sm">
                                                     Check All
                                                 </button>
-                                                <button id="uncheckAllBtn" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded text-sm">
+                                                <button id="uncheckAllBtnSiswa" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded text-sm">
                                                     Uncheck All
                                                 </button>
                                             </div>
-                                            <div class="mb-1 flex justify-between items-center">
+                                            <div class="mb-1 flex justify-between items-center" id="pageSiswa">
                                                 <button id="prevPage" class="bg-gray-300 text-gray-800 py-2 px-4 rounded disabled:opacity-50" disabled>Previous</button>
                                                 <span id="pageInfo" class="text-gray-800"></span>
                                                 <button id="nextPage" class="bg-gray-300 text-gray-800 py-2 px-4 rounded disabled:opacity-50" disabled>Next</button>
                                             </div>
-
-
-
+                                        </tbody>
+                                        <tbody id="dataTagihanKelas" class="hidden">
+                                            <div id="noDataMessageKelas" class="text-center text-black" style="display: none;">
+                                                Tidak ada data tagihan untuk kelas yang dipilih.
+                                            </div>
+                                            <div class="mb-4 flex gap-2 hidden" id="buttonKelas">
+                                                <button id="checkAllBtnKelas" class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded text-sm">
+                                                    Check All
+                                                </button>
+                                                <button id="uncheckAllBtnKelas" class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded text-sm">
+                                                    Uncheck All
+                                                </button>
+                                            </div>
+                                            <div class="mb-1 flex justify-between items-center hidden" id="pageKelas">
+                                                <button id="prevPageKelas" class="bg-gray-300 text-gray-800 py-2 px-4 rounded disabled:opacity-50" disabled>Previous</button>
+                                                <span id="pageInfoKelas" class="text-gray-800"></span>
+                                                <button id="nextPageKelas" class="bg-gray-300 text-gray-800 py-2 px-4 rounded disabled:opacity-50" disabled>Next</button>
+                                            </div>
                                         </tbody>
                                     </table>
                                 </div>

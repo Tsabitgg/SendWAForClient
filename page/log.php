@@ -40,7 +40,7 @@ $resultPesan = $mainConn->query($queryPesan);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     <link href="../src/output.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="../js/s_scriptLog.js"></script>
+    <script src="../js/scriptLog.js"></script>
     <title>History</title>
 </head>
 
@@ -144,9 +144,9 @@ $resultPesan = $mainConn->query($queryPesan);
             </header>
 
             <!-- main -->
-            <div class="bg-white mt-36 shadow-md rounded-lg mx-4 sm:mx-10 p-6 sm:max-w-6xl w-full">
+            <div class="bg-white mt-32 shadow-md rounded-lg mx-3 sm:mx-4 p-6 sm:max-w-[calc(100%-2rem)] w-full h-11/12">
                 <h2 class="text-2xl font-semibold mb-4">Data Table History</h2>
-                <div class="overflow-y-auto max-h-[65vh]">
+                <div class="overflow-y-auto max-h-[calc(100vh-15rem)]">
                     <table class="min-w-full bg-white">
                         <thead>
                             <tr class="bg-teal-800 text-white sticky top-0">
@@ -167,7 +167,7 @@ $resultPesan = $mainConn->query($queryPesan);
                                     echo "<tr>";
                                     echo "<td class='py-2 px-4 border-b border-gray-300'>" . $no++ . "</td>";
                                     echo "<td class='py-2 px-4 border-b border-gray-300'>" . $row['nama_pengirim'] . "</td>";
-                                    echo "<td class='py-2 px-4 border-b border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-md'>" . $row["pesan"] . "</td>";
+                                    echo "<td class='py-2 px-4 border-b border-gray-300 whitespace-nowrap overflow-hidden text-ellipsis max-w-xs'>" . $row["pesan"] . "</td>";
                                     echo "<td class='py-2 px-4 border-b border-gray-300 text-center text'>" . $row["nama_penerima"] . "</td>";
                                     // Menampilkan status dengan badge
                                     echo "<td class='py-2 px-4 border-b border-gray-300'>";
