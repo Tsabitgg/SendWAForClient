@@ -5,7 +5,10 @@ header("Content-Type: application/json");
 function sendWhatsAppMessage($phone_no, $message, $project_name)
 {
     $mainConn = new mysqli('localhost', 'root', 'Smartpay1ct', 'sendwa');
-    // $mainConn = new mysqli('localhost', 'root', '', 'apiwa');
+    if ($mainConn->connect_error) {
+        throw new Exception("Main database connection failed: " . $mainConn->connect_error);
+    }
+
     $stmt = $mainConn->prepare("SELECT wa_apikey, wa_numberkey FROM master_setting WHERE project_name = ?");
     $stmt->bind_param("s", $project_name);
     $stmt->execute();
@@ -23,35 +26,64 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
             "message" => $message
         ];
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $api_url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 20,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-        ]);
-
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-        curl_close($curl);
-
-        if ($error) {
-            return false;
+        //connection Log Traffic
+        $dbTraffic = new mysqli("10.99.23.20", "root", "Smartpay1ct", "farrelep_broadcaster");
+        if ($dbTraffic->connect_error) {
+            throw new Exception("Traffic database connection failed: " . $dbTraffic->connect_error);
         }
 
-        return $response !== false;
-    } else {
+        try {
+            $functionQuery = "SELECT SentWA('{$project_name}', '{$phone_no}', '{$credentials['wa_numberkey']}', '{$message}')";
+            $functionResult = $dbTraffic->query($functionQuery);
 
+            if (!$functionResult) {
+                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            }
+
+            $lastNumber = $functionResult->fetch_row()[0];
+
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $api_url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            ]);
+
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+            curl_close($curl);
+
+            if ($error) {
+                throw new Exception("Error during API call: " . $error);
+            }
+
+            $arrResponse = json_decode($response, true);
+            $status = $arrResponse['status'] ?? 'unknown';
+            $responseMessage = $arrResponse['message'] ?? 'No message';
+
+            $arrayResponse = json_encode($arrResponse);
+            $procedureQuery = "CALL GetResp('{$arrayResponse}', '{$status}', '{$responseMessage}', {$lastNumber})";
+            $procedureResult = $dbTraffic->query($procedureQuery);
+
+            if (!$procedureResult) {
+                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            }
+
+            return $arrResponse;
+
+        } catch (Exception $e) {
+            throw $e;
+        } finally {
+            $dbTraffic->close();
+        }
+
+    } else {
         return false;
     }
 }
+
 
 function getPhoneNumbers($method, $target, $dbConnection, $config)
 {
