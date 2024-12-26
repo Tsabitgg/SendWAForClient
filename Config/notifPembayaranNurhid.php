@@ -145,7 +145,7 @@ try {
     $nova = $db->real_escape_string($nova);
     $result = $db->query("SELECT scctbill.BILLAM, scctcust.NOCUST, scctcust.GENUSContact, scctcust.NMCUST 
     FROM scctcust JOIN scctbill ON scctcust.CUSTID = scctbill.CUSTID WHERE 
-    CONCAT(scctbill.BILLAM, scctcust.CUSTID) = '$nova'");
+    CONCAT(scctbill.BILLAM, scctcust.NOCUST) = '$nova'");
 
     if ($result->num_rows === 0) {
         echo json_encode(["error" => "Data not found for nova: $nova."]);
