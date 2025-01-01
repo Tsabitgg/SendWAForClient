@@ -4,14 +4,12 @@ session_start();
 require_once '../Config/db.php';
 require_once '../Config/wa.php';
 
-
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // if (!isset($_SESSION['logged_in'])) {
 //     header('Location: login.php');
 //     exit();
 // }
-
 
 // $userData = $_SESSION['user_data'];
 // $mainConn = getDbConnection('localhost', 'root', '', 'apiwa');
@@ -20,13 +18,23 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $username = $userData['username'];
 $conn = getDbConnection($userData['host'], $userData['userdb'], $userData['passdb'], $userData['dbname']);
 
-// Ambil data pesan yang disubmit dari database
-$queryPesan = "SELECT * FROM log_pesan WHERE project_name = '" . $userData['project_name'] . "' ORDER BY sent_at DESC";
-$resultPesan = $mainConn->query($queryPesan);
+$stmtLogTable = $conn->prepare("SELECT tabel_log FROM master_setting WHERE project_name = ?");
+$stmtLogTable->bind_param("s", $userData['project_name']);
+$stmtLogTable->execute();
+$resultLogTable = $stmtLogTable->get_result();
 
+if ($resultLogTable->num_rows === 0) {
+    die("Tabel log tidak ditemukan untuk project: " . $userData['project_name']);
+}
 
+$logTable = $resultLogTable->fetch_assoc()['tabel_log'];
+
+// Ambil data pesan yang disubmit berdasarkan tabel log yang dinamis
+$queryPesan = "SELECT * FROM {$logTable} WHERE project_name = '" . $userData['project_name'] . "' ORDER BY sent_at DESC";
+$resultPesan = $conn->query($queryPesan);
 
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -136,13 +136,24 @@ function getPhoneNumbers($method, $target, $dbConnection, $config)
 
 
 date_default_timezone_set('Asia/Jakarta');
-function logMessage($conn, $nama_pengirim, $message, $nama_penerima, $status, $method, $project_name)
+function logMessage($conn, $nama_pengirim, $message, $nama_penerima, $status, $method, $project_name, $request_json, $response_json)
 {
+    $stmtLogTable = $conn->prepare("SELECT tabel_log FROM master_setting WHERE project_name = ?");
+    $stmtLogTable->bind_param("s", $project_name);
+    $stmtLogTable->execute();
+    $resultLogTable = $stmtLogTable->get_result();
+    if ($resultLogTable->num_rows === 0) {
+        throw new Exception("Tabel log tidak ditemukan untuk project Nasabah: {$project_name}");
+    }
+
+    $logTable = $resultLogTable->fetch_assoc()['tabel_log'];
+
+    $stmtLog = $conn->prepare("INSERT INTO {$logTable} (nama_pengirim, pesan, nama_penerima, status, sent_at, method, project_name, request_json, response_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $waktu = date('Y-m-d H:i:s');
-    $stmtLog = $conn->prepare("INSERT INTO log_pesan (nama_pengirim, pesan, nama_penerima, status, sent_at, method, project_name) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmtLog->bind_param("sssssss", $nama_pengirim, $message, $nama_penerima, $status, $waktu, $method, $project_name);
+    $stmtLog->bind_param("sssssssss", $nama_pengirim, $message, $nama_penerima, $status, $waktu, $method, $project_name, $request_json, $response_json);
     $stmtLog->execute();
 }
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $input = json_decode(file_get_contents('php://input'), true);
@@ -207,7 +218,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = sendWhatsAppMessage($phoneNo, $description, $project_name);
         $status = $success ? 'berhasil' : 'gagal';
 
-        logMessage($mainDbConnection, $nama_pengirim, $description, $nama_penerima, $status, $method, $project_name);
+        $request_json = json_encode([
+            "phone_no" => $phoneNo,
+            "message" => $description,
+        ]);
+        $response_json = json_encode($success);
+
+        logMessage($mainDbConnection, $nama_pengirim, $description, $nama_penerima, $status, $method, $project_name, $request_json, $response_json);
 
         $responses[] = [
             'target' => $phoneNo,

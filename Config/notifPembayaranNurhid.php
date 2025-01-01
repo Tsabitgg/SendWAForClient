@@ -107,10 +107,11 @@ class JWT
 $secretKey = 'TokenJWT_BMI_ICT';
 
 $messages = [
-    "Terima kasih, {NMCUST}, atas pembayaran sebesar Rp{nominal}. Semoga hari Anda menyenangkan!",
-    "Halo, {NMCUST}! Kami telah menerima pembayaran Anda sebesar Rp{nominal}. Terima kasih!",
-    "Hai, {NMCUST}! Pembayaran Rp{nominal} telah kami terima. Terima kasih banyak!",
+    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Terima kasih atas pembayaran sebesar Rp{nominal}. Semoga Allah SWT melimpahkan keberkahan kepada Anda.",
+    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Pembayaran Anda sebesar Rp{nominal} telah kami terima. Jazakumullah khair atas kepercayaan Anda kepada kami.",
+    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Alhamdulillah, pembayaran sebesar Rp{nominal} telah kami terima. Semoga rezeki Anda senantiasa diberkahi oleh Allah SWT.",
 ];
+
 
 try {
     $token = $_GET['token'] ?? null;
@@ -138,9 +139,8 @@ try {
     }
 
     $nova = $db->real_escape_string($nova);
-    $result = $db->query("SELECT scctbill.BILLAM, scctcust.NOCUST, scctcust.GENUSContact, scctcust.NMCUST 
-    FROM scctcust JOIN scctbill ON scctcust.CUSTID = scctbill.CUSTID WHERE 
-    CONCAT(scctbill.BILLAM, scctcust.NOCUST) = '$nova'");
+    $result = $db->query("SELECT scctcust.NOCUST, scctcust.GENUSContact, scctcust.NMCUST 
+    FROM scctcust WHERE scctcust.NOCUST = '$nova'");
 
     if ($result->num_rows === 0) {
         echo json_encode(["error" => "Data not found for nova: $nova."]);

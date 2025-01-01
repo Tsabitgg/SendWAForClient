@@ -442,7 +442,7 @@ $conn->close();
                                                             </div>
                                                         </div>
                                                         <div class="flex-row">
-                                                            <label for="project-name" class="block text-gray-700 font-medium mb-2 after:content-['*'] after:text-pink-500">Project name :</label>
+                                                            <label for="project-name" class="block text-gray-700 font-medium mb-2 after:content-['*'] after:text-pink-500">Project name (Format : KotaNasabah_NamaNasabah):</label>
                                                             <div class="mt-2">
                                                                 <input id="project-name" name="project-name" required type="text" placeholder="projectname...." class="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-200 sm:text-sm sm:leading-6">
                                                                 <p id="projectname-error" class="mt-1 text-sm text-red-600 hidden">Project name telah digunakan!</p>
@@ -762,7 +762,7 @@ $conn->close();
                                                                                 </div>
 
                                                                                 <div class="flex-row">
-                                                                                    <label for="project-nameedit" class="block text-gray-700 font-medium mb-2 after:content-['*'] after:text-pink-500">Project name :</label>
+                                                                                    <label for="project-nameedit" class="block text-gray-700 font-medium mb-2 after:content-['*'] after:text-pink-500">Project name (Format : KotaNasabah_NamaNasabah):</label>
                                                                                     <div class="mt-2">
                                                                                         <input id="project-nameedit" name="project-nameedit" required type="text" placeholder="projectname...." value="<?= htmlspecialchars($row['project_name']); ?>" class="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-200 sm:text-sm sm:leading-6">
                                                                                         <p id="projectnameedit-error" class="mt-1 text-sm text-red-600 hidden">Project name telah digunakan!</p>
