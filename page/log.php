@@ -31,7 +31,7 @@ $logTable = $resultLogTable->fetch_assoc()['tabel_log'];
 
 // Ambil data pesan yang disubmit berdasarkan tabel log yang dinamis
 $queryPesan = "SELECT * FROM {$logTable} WHERE project_name = '" . $userData['project_name'] . "' ORDER BY sent_at DESC";
-$resultPesan = $conn->query($queryPesan);
+$resultPesan = $conn->$mainConn($queryPesan);
 
 ?>
 
