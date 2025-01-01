@@ -18,7 +18,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $username = $userData['username'];
 $conn = getDbConnection($userData['host'], $userData['userdb'], $userData['passdb'], $userData['dbname']);
 
-$stmtLogTable = $conn->prepare("SELECT tabel_log FROM master_setting WHERE project_name = ?");
+$stmtLogTable = $mainConn->prepare("SELECT tabel_log FROM master_setting WHERE project_name = ?");
 $stmtLogTable->bind_param("s", $userData['project_name']);
 $stmtLogTable->execute();
 $resultLogTable = $stmtLogTable->get_result();
