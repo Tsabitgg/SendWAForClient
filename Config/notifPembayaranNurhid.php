@@ -212,7 +212,7 @@ try {
                 throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
             }
 
-            echo json_encode([$arrayResponse]);
+            echo json_encode($arrResponse);
         } catch (Exception $e) {
             echo json_encode(["error" => $e->getMessage()]);
         } finally {
