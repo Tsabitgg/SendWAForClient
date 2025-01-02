@@ -33,14 +33,14 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
         }
 
         try {
-            // $functionQuery = "SELECT SentWA('{$project_name}', '{$phone_no}', '{$credentials['wa_numberkey']}', '{$message}')";
-            // $functionResult = $dbTraffic->query($functionQuery);
+            $functionQuery = "SELECT SentWA('{$project_name}', '{$phone_no}', '{$credentials['wa_numberkey']}', '{$message}')";
+            $functionResult = $dbTraffic->query($functionQuery);
 
-            // if (!$functionResult) {
-            //     throw new Exception("Error in SELECT function: " . $dbTraffic->error);
-            // }
+            if (!$functionResult) {
+                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            }
 
-            // $lastNumber = $functionResult->fetch_row()[0];
+            $lastNumber = $functionResult->fetch_row()[0];
 
             $curl = curl_init();
             curl_setopt_array($curl, [
@@ -64,12 +64,12 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
             $responseMessage = $arrResponse['message'] ?? 'No message';
 
             $arrayResponse = json_encode($arrResponse);
-            // $procedureQuery = "CALL GetResp('{$arrayResponse}', '{$status}', '{$responseMessage}', {$lastNumber})";
-            // $procedureResult = $dbTraffic->query($procedureQuery);
+            $procedureQuery = "CALL GetResp('{$arrayResponse}', '{$status}', '{$responseMessage}', {$lastNumber})";
+            $procedureResult = $dbTraffic->query($procedureQuery);
 
-            // if (!$procedureResult) {
-            //     throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
-            // }
+            if (!$procedureResult) {
+                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            }
 
             return $arrResponse;
 

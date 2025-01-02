@@ -144,9 +144,9 @@ function sendRequestToApiwa($data)
 function handleApiResponse($response)
 {
     if (is_array($response)) {
-        $decodedResponse = $response; // Jika array, gunakan langsung
+        $decodedResponse = $response;
     } else {
-        $decodedResponse = json_decode($response, true); // Jika string JSON, decode
+        $decodedResponse = json_decode($response, true);
     }
 
     if (isset($decodedResponse['status']) && $decodedResponse['status'] === 'berhasil') {

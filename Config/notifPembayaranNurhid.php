@@ -107,9 +107,9 @@ class JWT
 $secretKey = 'TokenJWT_BMI_ICT';
 
 $messages = [
-    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Terima kasih atas pembayaran sebesar Rp{nominal}. Semoga Allah SWT melimpahkan keberkahan kepada Anda.",
-    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Pembayaran Anda sebesar Rp{nominal} telah kami terima. Jazakumullah khair atas kepercayaan Anda kepada kami.",
-    "Assalamu'alaikum warahmatullahi wabarakatuh, {NMCUST}. Alhamdulillah, pembayaran sebesar Rp{nominal} telah kami terima. Semoga rezeki Anda senantiasa diberkahi oleh Allah SWT.",
+    "Assalamualaikum warahmatullahi wabarakatuh, {NMCUST}. Terima kasih atas pembayaran sebesar Rp{nominal}. Semoga Allah SWT melimpahkan keberkahan kepada Anda.",
+    "Assalamualaikum warahmatullahi wabarakatuh, {NMCUST}. Pembayaran Anda sebesar Rp{nominal} telah kami terima. Jazakumullah khair atas kepercayaan Anda kepada kami.",
+    "Assalamualaikum warahmatullahi wabarakatuh, {NMCUST}. Alhamdulillah, pembayaran sebesar Rp{nominal} telah kami terima. Semoga rezeki Anda senantiasa diberkahi oleh Allah SWT.",
 ];
 
 
@@ -161,14 +161,14 @@ try {
         }
 
         try {
-            $selectQuery = "SELECT SentWA('Solo_NurHidayah', '" . $GENUSContact . "', 'yXLAdQbRzkHdvlDJ', '" . $message . "')";
-            $selectResult = $dbTraffic->query($selectQuery);
+            // $selectQuery = "SELECT SentWA('Solo_NurHidayah', '" . $GENUSContact . "', 'yXLAdQbRzkHdvlDJ', '" . $message . "')";
+            // $selectResult = $dbTraffic->query($selectQuery);
 
-            if (!$selectResult) {
-                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
-            }
+            // if (!$selectResult) {
+            //     throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            // }
 
-            $lastNumber = $selectResult->fetch_row()[0];
+            // $lastNumber = $selectResult->fetch_row()[0];
 
             // Hit API WhatsApp
             $api_url = 'https://api.watzap.id/v1/send_message';
@@ -205,12 +205,12 @@ try {
             $responseMessage = $arrResponse['message'];
             $arrayResponse = json_encode($arrResponse);
 
-            $procedureQuery = "CALL GetResp('" . $arrayResponse . "', '" . $status . "', '" . $responseMessage . "', " . $lastNumber . ")";
-            $procedureResult = $dbTraffic->query($procedureQuery);
+            // $procedureQuery = "CALL GetResp('" . $arrayResponse . "', '" . $status . "', '" . $responseMessage . "', " . $lastNumber . ")";
+            // $procedureResult = $dbTraffic->query($procedureQuery);
 
-            if (!$procedureResult) {
-                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
-            }
+            // if (!$procedureResult) {
+            //     throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            // }
 
             echo json_encode(["success" => "Message sent and procedure called successfully."]);
         } catch (Exception $e) {
