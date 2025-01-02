@@ -197,7 +197,7 @@ try {
             }
 
             $arrResponse = json_decode($response, true);
-            if ($arrResponse['status'] !== 'success') {
+            if ($arrResponse['status'] !== '200') {
                 throw new Exception("WhatsApp API returned an error: " . $arrResponse['message']);
             }
             
