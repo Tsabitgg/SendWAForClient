@@ -235,8 +235,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
+    header('Content-Type: application/json');
     echo json_encode([
-        'status' => 'success',
+        'status' => $status,
         'message' => 'Messages processed',
         'data' => $responses
     ]);
