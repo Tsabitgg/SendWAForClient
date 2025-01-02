@@ -161,14 +161,14 @@ try {
         }
 
         try {
-            // $selectQuery = "SELECT SentWA('Solo_NurHidayah', '" . $GENUSContact . "', 'yXLAdQbRzkHdvlDJ', '" . $message . "')";
-            // $selectResult = $dbTraffic->query($selectQuery);
+            $selectQuery = "SELECT SentWA('Solo_NurHidayah', '" . $GENUSContact . "', 'yXLAdQbRzkHdvlDJ', '" . $message . "')";
+            $selectResult = $dbTraffic->query($selectQuery);
 
-            // if (!$selectResult) {
-            //     throw new Exception("Error in SELECT function: " . $dbTraffic->error);
-            // }
+            if (!$selectResult) {
+                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            }
 
-            // $lastNumber = $selectResult->fetch_row()[0];
+            $lastNumber = $selectResult->fetch_row()[0];
 
             // Hit API WhatsApp
             $api_url = 'https://api.watzap.id/v1/send_message';
@@ -205,14 +205,14 @@ try {
             $responseMessage = $arrResponse['message'];
             $arrayResponse = json_encode($arrResponse);
 
-            // $procedureQuery = "CALL GetResp('" . $arrayResponse . "', '" . $status . "', '" . $responseMessage . "', " . $lastNumber . ")";
-            // $procedureResult = $dbTraffic->query($procedureQuery);
+            $procedureQuery = "CALL GetResp('" . $arrayResponse . "', '" . $status . "', '" . $responseMessage . "', " . $lastNumber . ")";
+            $procedureResult = $dbTraffic->query($procedureQuery);
 
-            // if (!$procedureResult) {
-            //     throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
-            // }
+            if (!$procedureResult) {
+                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            }
 
-            echo json_encode(["success" => "Message sent and procedure called successfully."]);
+            echo json_encode([$arrayResponse]);
         } catch (Exception $e) {
             echo json_encode(["error" => $e->getMessage()]);
         } finally {
