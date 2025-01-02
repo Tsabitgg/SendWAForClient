@@ -71,7 +71,16 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
             //     throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
             // }
 
-            return $arrResponse;
+            if ($status === '200') {
+                $resultStatus = true;
+            } else {
+                $resultStatus = false;
+            }
+            
+            return [
+                'success' => $resultStatus,
+                'response' => $arrResponse
+            ];
 
         } catch (Exception $e) {
             throw $e;
