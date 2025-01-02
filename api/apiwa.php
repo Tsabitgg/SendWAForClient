@@ -245,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     echo json_encode([
-        'status' => '200',
+        'status' => 'success',
         'message' => 'Messages processed',
         'data' => $responses
     ]);
