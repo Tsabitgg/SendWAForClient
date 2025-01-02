@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nama_penerima = $entry['nama'];
         $response = sendWhatsAppMessage($phoneNo, $description, $project_name);
 
-        $status = isset($response['status']) && $response['status'] == '200' ? 'berhasil' : 'gagal';
+        $status = isset($response['status']) && $response['status'] === '200' ? 'berhasil' : 'gagal';
 
         $request_json = json_encode([
             "phone_no" => $phoneNo,
