@@ -143,21 +143,33 @@ function sendRequestToApiwa($data)
 
 function handleApiResponse($response)
 {
-    // Cek apakah ada data dalam response dan jika status pada data adalah berhasil atau gagal
     if (isset($response['data']) && is_array($response['data'])) {
-        foreach ($response['data'] as $res) {
-            // Memeriksa status pada masing-masing item dalam data
-            if (isset($res['status']) && $res['status'] === '200') {
-                $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
-                $_SESSION['toast_type'] = 'success';
+        $successCount = 0;
+        $failedCount = 0;
+
+        foreach ($response['data'] as $item) {
+            if (isset($item['status']) && $item['status'] === 'berhasil') {
+                $successCount++;
             } else {
-                $_SESSION['toast_message'] = 'Pesan gagal dikirim! ' . ($res['error'] ?? '');
-                $_SESSION['toast_type'] = 'failed';
+                $failedCount++;
             }
         }
+
+        if ($successCount > 0 && $failedCount === 0) {
+            $_SESSION['toast_message'] = 'Semua pesan WhatsApp berhasil dikirim!';
+            $_SESSION['toast_type'] = 'success';
+        } elseif ($successCount > 0 && $failedCount > 0) {
+            $_SESSION['toast_message'] = "Beberapa pesan berhasil dikirim: $successCount sukses, $failedCount gagal.";
+            $_SESSION['toast_type'] = 'warning';
+        } else {
+            $_SESSION['toast_message'] = 'Semua pesan gagal dikirim!';
+            $_SESSION['toast_type'] = 'failed';
+        }
+    } else {
+        $_SESSION['toast_message'] = 'Tidak ada data untuk diproses!';
+        $_SESSION['toast_type'] = 'failed';
     }
 }
-
 
 
 // Fungsi untuk mengupdate status log_pesan
