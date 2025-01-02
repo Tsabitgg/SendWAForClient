@@ -147,7 +147,7 @@ function handleApiResponse($response)
     if (isset($response['data']) && is_array($response['data'])) {
         foreach ($response['data'] as $res) {
             // Memeriksa status pada masing-masing item dalam data
-            if (isset($res['status']) && $res['status'] === 'berhasil') {
+            if (isset($res['status']) && $res['status'] === '200') {
                 $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
                 $_SESSION['toast_type'] = 'success';
             } else {
