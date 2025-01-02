@@ -143,7 +143,7 @@ function sendRequestToApiwa($data)
 
 function handleApiResponse($response)
 {
-    if (isset($response['status']) && $response['status'] === 'berhasil') {
+    if (isset($response['status']) && $response['status'] === 'success') {
         $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
         $_SESSION['toast_type'] = 'success';
     } else {
