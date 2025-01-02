@@ -174,7 +174,7 @@ try {
             $api_url = 'https://api.watzap.id/v1/send_message';
             $data = [
                 "api_key" => "1FOPYD2SA8VPIU4Q",
-                "number_key" => "yXLAdQbRzkHdvlDJ",
+                "number_key" => "MUMZZyU2LSzoy3yW",
                 "phone_no" => $GENUSContact,
                 "message" => $message,
             ];
