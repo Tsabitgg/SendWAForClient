@@ -148,8 +148,8 @@ function handleApiResponse($response)
     } else {
         $decodedResponse = json_decode($response, true); // Jika string JSON, decode
     }
-    
-    if (isset($decodedResponse['status']) && $decodedResponse['status'] === 'success') {
+
+    if (isset($decodedResponse['status']) && $decodedResponse['status'] === 'berhasil') {
         $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
         $_SESSION['toast_type'] = 'success';
     } else {
