@@ -120,6 +120,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send'])) {
 }
 
 
+function sendRequestToApiwa($data)
+{
+    // $url = 'http://localhost/sendwa/apiwa.php';
+    $url = 'http://localhost/apiwa/SendWAForClient/api/apiwa.php';
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+
+    ));
+
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    return json_decode($response, true);
+}
+
 function handleApiResponse($response)
 {
     // Debugging: cek struktur data
@@ -152,6 +173,7 @@ function handleApiResponse($response)
         $_SESSION['toast_type'] = 'failed';
     }
 }
+
 
 
 
