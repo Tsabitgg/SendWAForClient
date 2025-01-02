@@ -143,14 +143,21 @@ function sendRequestToApiwa($data)
 
 function handleApiResponse($response)
 {
-    if (isset($response['status']) && $response['status'] === '200') {
-        $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
-        $_SESSION['toast_type'] = 'success';
-    } else {
-        $_SESSION['toast_message'] = 'Pesan gagal dikirim! ' . ($response['error'] ?? '');
-        $_SESSION['toast_type'] = 'failed';
+    // Cek apakah ada data dalam response dan jika status pada data adalah berhasil atau gagal
+    if (isset($response['data']) && is_array($response['data'])) {
+        foreach ($response['data'] as $res) {
+            // Memeriksa status pada masing-masing item dalam data
+            if (isset($res['status']) && $res['status'] === 'berhasil') {
+                $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
+                $_SESSION['toast_type'] = 'success';
+            } else {
+                $_SESSION['toast_message'] = 'Pesan gagal dikirim! ' . ($res['error'] ?? '');
+                $_SESSION['toast_type'] = 'failed';
+            }
+        }
     }
 }
+
 
 
 // Fungsi untuk mengupdate status log_pesan
