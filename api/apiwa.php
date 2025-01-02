@@ -33,14 +33,14 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
         }
 
         try {
-            $functionQuery = "SELECT SentWA('{$project_name}', '{$phone_no}', '{$credentials['wa_numberkey']}', '{$message}')";
-            $functionResult = $dbTraffic->query($functionQuery);
+            // $functionQuery = "SELECT SentWA('{$project_name}', '{$phone_no}', '{$credentials['wa_numberkey']}', '{$message}')";
+            // $functionResult = $dbTraffic->query($functionQuery);
 
-            if (!$functionResult) {
-                throw new Exception("Error in SELECT function: " . $dbTraffic->error);
-            }
+            // if (!$functionResult) {
+            //     throw new Exception("Error in SELECT function: " . $dbTraffic->error);
+            // }
 
-            $lastNumber = $functionResult->fetch_row()[0];
+            // $lastNumber = $functionResult->fetch_row()[0];
 
             $curl = curl_init();
             curl_setopt_array($curl, [
@@ -64,24 +64,14 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
             $responseMessage = $arrResponse['message'] ?? 'No message';
 
             $arrayResponse = json_encode($arrResponse);
-            $procedureQuery = "CALL GetResp('{$arrayResponse}', '{$status}', '{$responseMessage}', {$lastNumber})";
-            $procedureResult = $dbTraffic->query($procedureQuery);
+            // $procedureQuery = "CALL GetResp('{$arrayResponse}', '{$status}', '{$responseMessage}', {$lastNumber})";
+            // $procedureResult = $dbTraffic->query($procedureQuery);
 
-            if (!$procedureResult) {
-                throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
-            }
+            // if (!$procedureResult) {
+            //     throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
+            // }
 
-            // Validasi status respons API
-            if ($status === '200') { // Asumsi '200' adalah status sukses
-                $resultStatus = true;
-            } else {
-                $resultStatus = false;
-            }
-
-            return [
-                'success' => $resultStatus,
-                'response' => $arrResponse
-            ];
+            return $arrResponse;
 
         } catch (Exception $e) {
             throw $e;
@@ -225,17 +215,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($phoneNumbers as $entry) {
         $phoneNo = $entry['phone'];
         $nama_penerima = $entry['nama'];
-        $success = sendWhatsAppMessage($phoneNo, $description, $project_name);
+        $response = sendWhatsAppMessage($phoneNo, $description, $project_name);
+
+        $status = isset($response['status']) && $response['status'] == '200' ? 'berhasil' : 'gagal';
 
         $request_json = json_encode([
             "phone_no" => $phoneNo,
             "message" => $description,
         ]);
-        // $response_json = json_encode($success);
 
-        $successed = $success['success'];
-        $response_json = json_encode($response['response']);
-        $status = $successed ? 'berhasil' : 'gagal';
+        $response_json = json_encode($response);
 
         logMessage($mainDbConnection, $nama_pengirim, $description, $nama_penerima, $status, $method, $project_name, $request_json, $response_json);
 
