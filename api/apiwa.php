@@ -71,7 +71,17 @@ function sendWhatsAppMessage($phone_no, $message, $project_name)
                 throw new Exception("Error in CALL procedure: " . $dbTraffic->error);
             }
 
-            return $arrResponse;
+            // Validasi status respons API
+            if ($status === '200') { // Asumsi '200' adalah status sukses
+                $resultStatus = true;
+            } else {
+                $resultStatus = false;
+            }
+
+            return [
+                'success' => $resultStatus,
+                'response' => $arrResponse
+            ];
 
         } catch (Exception $e) {
             throw $e;
@@ -216,13 +226,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $phoneNo = $entry['phone'];
         $nama_penerima = $entry['nama'];
         $success = sendWhatsAppMessage($phoneNo, $description, $project_name);
-        $status = $success ? 'berhasil' : 'gagal';
 
         $request_json = json_encode([
             "phone_no" => $phoneNo,
             "message" => $description,
         ]);
-        $response_json = json_encode($success);
+        // $response_json = json_encode($success);
+
+        $successed = $success['success'];
+        $response_json = json_encode($response['response']);
+        $status = $successed ? 'berhasil' : 'gagal';
 
         logMessage($mainDbConnection, $nama_pengirim, $description, $nama_penerima, $status, $method, $project_name, $request_json, $response_json);
 
