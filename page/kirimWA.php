@@ -147,7 +147,7 @@ function handleApiResponse($response)
         $_SESSION['toast_message'] = 'Pesan WhatsApp berhasil dikirim!';
         $_SESSION['toast_type'] = 'success';
     } else {
-        $_SESSION['toast_message'] = 'Pesan gagal dikirim! ' . ($response['message'] ?? '');
+        $_SESSION['toast_message'] = 'Pesan gagal dikirim! ' . ($response['error'] ?? '');
         $_SESSION['toast_type'] = 'failed';
     }
 }
